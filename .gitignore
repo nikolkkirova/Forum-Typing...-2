@@ -1,0 +1,23 @@
+bin/
+obj/
+
+# ML модели и големи файлове
+*.zip
+*.dylib
+*.dll
+*.exe
+*.pdb
+
+# Конфигурации с чувствителна информация
+appsettings.json
+appsettings.*.json
+
+# Потребителски настройки на VS/IDE
+.vscode/
+*.user
+*.suo
+*.csproj.user
+
+# Други временно генерирани файлове
+*.log
+*.tmp

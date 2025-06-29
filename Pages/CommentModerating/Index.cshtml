@@ -1,0 +1,57 @@
+@page
+@model Forum.Pages.CommentModerating.IndexModel
+@using Microsoft.AspNetCore.Identity
+
+@{
+    ViewData["Title"] = "Moderator Panel";
+}
+
+<h2>Flagged comments</h2>
+
+@if (!Model.FlaggedComments.Any())
+{
+    <p>There are no flagged comments</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Topic</th>
+                <th>Comment</th>
+                <th>Author</th>
+                <th>Date</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var comment in Model.FlaggedComments)
+            {
+                <tr>
+                    <td>@comment.Topic?.Title</td>
+                    <td>@comment.Content</td>
+                    <td>@comment.CreatedByUser?.UserName</td>
+                    <td>@comment.CreatedAt.ToLocalTime()</td>
+
+                <td class="text-center">
+
+                    <div class="d-flex gap-2 ms-6" >
+                        <form method="post" asp-page-handler="Approve" asp-route-id="@comment.Id">
+                            <button type="submit" class="btn btn-sm btn-success" title="Approve">Approve</button>
+                        </form>
+
+                        <form method="post" asp-page-handler="Reject" asp-route-id="@comment.Id">
+                            <button type="submit" class="btn btn-sm btn-danger" title="Delete" onclick="return confirm('Are you sure you want to delete this comment?')">
+                                Delete
+                            </button>
+                        </form>
+                    </div>
+
+                </td>
+                </tr>
+            }
+        </tbody>
+
+    </table>
+}

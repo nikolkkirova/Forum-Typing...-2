@@ -1,0 +1,111 @@
+@page
+@model Forum.Pages.Topics.IndexModel
+@using Microsoft.AspNetCore.Identity
+@using Forum.Models
+@inject SignInManager<ForumUser> SignInManager
+@inject UserManager<ForumUser> UserManager
+
+@{
+    ViewData["Title"] = "Topics";
+}
+
+<h1>Topics</h1>
+
+<p>
+    <a asp-page="Create" class="=btn btn-success">Create a new topic</a>
+</p>
+
+@{
+    var isSignedIn = SignInManager.IsSignedIn(User);
+    var currentUserId = Model.CurrentUserId;
+    var isModerator = Model.IsModerator;
+}
+@foreach (var topic in Model.Topic)
+{
+    var isOwner = topic.UserId == currentUserId;
+    <div class="card mb-4">
+        <div class="card-body">
+            <h3 class="card-title">@topic.Title</h3>
+            <p class="card-text">@topic.Content</p>
+            <p class="text-muted">
+                Posted by: <strong>@topic.User?.UserName</strong> on @topic.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")
+            </p>
+
+            @* даден потребител може да трие собствените си теми, а модераторът всички *@
+          
+            @if (isOwner || isModerator)
+            {
+                <p>
+                    <a asp-page="Edit" asp-route-id="@topic.Id" class="btn btn-warning btn-sm">Edit</a>
+                    <a asp-page="Delete" asp-route-id="@topic.Id" class="btn btn-danger btn-sm">Delete</a>
+
+                </p>
+            }
+
+            <hr />
+            <h5>Comments</h5>
+
+            @if (topic.Comments != null && topic.Comments.Any())
+            {
+                <ul class="list-group list-group-flush">
+                    @foreach (var comment in topic.Comments.OrderBy(c => c.CreatedAt))
+                    {
+                        <li class="list-group-item">
+                            <strong>
+                                @if (comment.CreatedByUser == null) // ако потребителят е изтрит,
+                                {
+                                    @:[изтрит потребител] @* ще се покаже null *@
+                                }
+                                else
+                                {
+                                    @(comment.CreatedByUser.DisplayName ?? comment.CreatedByUser.UserName) // ако потребителят съществува, ще се покаже неговото име
+                                }
+                            </strong>
+                            <br />
+                            <small class="text-muted">@comment.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</small>
+                            <p class="mt-2">@comment.Content</p>
+
+                            @* бутон за триене ако е модератор или собственик на коментара *@
+                            @if (isModerator || comment.CreatedByUserId == currentUserId)
+                            {
+                                <form method="post" asp-page-handler="DeleteComment" asp-route-commentId="@comment.Id" class="mt-2">
+                                    <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                                </form>
+                            }
+                            
+                        </li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p>There are no comments yet.</p>
+            }
+
+            @if (SignInManager.IsSignedIn(User))
+            {
+                <form method="post" class="mt-3">
+                    <input type="hidden" asp-for="NewCommentTopicId" value="@topic.Id" />
+                    <div class="mb2">
+                        <textarea asp-for="NewCommentContent" class="form-control" placeholder="Write a comment" rows="3"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary mt-3">Post</button>
+                </form>
+            }
+            else
+            {
+                <p class="mt-2"><a asp-page="/Account/Login">Log into your profile</a> to write a comment.</p>
+            }
+        </div>
+    </div>
+}
+
+@* Записки
+
+User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value връща Id на текущия потребител
+topic.UserId връща Id на текущия потребител
+
+
+
+
+ *@

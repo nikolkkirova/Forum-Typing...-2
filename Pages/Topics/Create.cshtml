@@ -1,0 +1,47 @@
+@page
+@model Forum.Pages.Topics.CreateModel
+
+        @{
+        ViewData["Title"] = "Create";
+        }
+        
+        <h1>Create</h1>
+        
+    <h4>Topic</h4>
+    <hr />
+    <div class="row">
+    <div class="col-md-4">
+    <form method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <span class="text-danger">*</span>
+                <label asp-for="Topic.Title" class="control-label"></label>
+                <input asp-for="Topic.Title" class="form-control" />
+                <span asp-validation-for="Topic.Title" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <span class="text-danger">*</span>
+                <label asp-for="Topic.Content" class="control-label"></label>
+                <textarea asp-for="Topic.Content" class="form-control" rows="10" placeholder="Describe here..."></textarea>
+                <span asp-validation-for="Topic.Content" class="text-danger"></span>
+            </div>
+            @* <div class="form-group">
+                <label asp-for="Topic.CreatedAt" class="control-label"></label>
+                <input asp-for="Topic.CreatedAt" class="form-control" />
+                <span asp-validation-for="Topic.CreatedAt" class="text-danger"></span>
+            </div> *@
+            @* <div class="form-group">
+                <label asp-for="Topic.UserId" class="control-label"></label>
+                <select asp-for="Topic.UserId" class ="form-control" asp-items="ViewBag.UserId"></select>
+            </div> *@
+            <div class="form-group mt-3">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="mt-2">
+    <a asp-page="Index">Back to List</a>
+</div>
+

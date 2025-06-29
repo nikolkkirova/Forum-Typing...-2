@@ -1,0 +1,45 @@
+@page
+@model Forum.Pages.Administrator.IndexModel
+@{
+    ViewData["Title"] = "Administrator Panel";
+}
+
+<h2>All users</h2>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Email</th>
+            <th>Is Active</th>
+            <th>Is Moderator</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var user in Model.Users)
+        {
+            var isModerator = await Model.UserManager.IsInRoleAsync(user, "Moderator");
+
+            <tr>
+                <td>@user.Email</td>
+                <td>@(user.IsDeactivated ? "No" : "Yes")</td>
+                <td>@(isModerator ? "Yes" : "No")</td>
+
+            <td>
+                <form method="post" asp-page-handler="ToggleDeactivation" asp-route-id="@user.Id" class="d-inline">
+                    <button type="submit" class="btn btn-sm @(user.IsDeactivated ? "btn-success" : "btn-warning")">
+                        @(user.IsDeactivated ? "Activate" : "Deactivate")
+                    </button>
+                </form>
+
+                <form method="post" asp-page-handler="ToggleModerator" asp-route-id="@user.Id" class="d-inline">
+                    <button type="submit" class="btn btn-sm @(isModerator ? "btn-danger" : "btn-primary")">
+                       @(isModerator ? "Remove moderator" : "Make moderator") 
+                    </button>
+                </form>
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>
